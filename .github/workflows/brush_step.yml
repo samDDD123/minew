@@ -13,25 +13,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout codes
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
       - name: Update system and install zsh
         run: |
           sudo -E apt-get -qq update
           sudo -E apt-get install zsh -y
-          
+
       - name: 初始化Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.8
-          
+          python-version: '3.11'
+
       - name: 开始
         run: |
           pip3 install requests pytz pycryptodome
           user='${{ secrets.USER }}'
-          passwd='${{ secrets.PWD }}' 
+          passwd='${{ secrets.PWD }}'
           open_get_weather='${{ secrets.OPEN_GET_WEATHER }}'
           area='${{ secrets.AREA }}'
           python3 main.py ${user} ${passwd} ${open_get_weather} ${area}
