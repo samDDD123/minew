@@ -209,16 +209,16 @@ def get_factor_by_weather(area):
         factor_dict = {"多云": 0.9, "阴": 0.8, "小雨": 0.7, "中雨": 0.5, "大雨": 0.4, "暴雨": 0.3, "大暴雨": 0.2, "特大暴雨": 0.2}
         url = f'https://wthrcdn.etouch.cn/weather_mini?city={area}'
         header = {'User-Agent': 'Mozilla/5.0'}
-        r = requests.get(url=url, headers=header)
-        if r.status_code == 200:
-            result = r.text
-            res = json.loads(result)
+        try:
+            print("正在查询天气，超时后使用默认系数", flush=True)
+            r = requests.get(url=url, headers=header, timeout=10)
+            r.raise_for_status()
+            res = r.json()
             weather = res['data']['forecast'][0]['type']
-            if weather in factor_dict:
-                return factor_dict[weather]
-        else:
-            print("获取天气情况出错")
-        return 1
+            return factor_dict.get(weather, 1)
+        except (requests.RequestException, ValueError, KeyError, IndexError, TypeError) as e:
+            print(f"天气查询失败，使用默认系数1: {e}", flush=True)
+            return 1
 
 if __name__ == "__main__":
     users = sys.argv[1]
